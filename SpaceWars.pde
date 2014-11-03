@@ -120,7 +120,7 @@ void splash()
 {
   background(0);
   fill(255);
-  printText("Yet Another Spacwars Clone (YASC)!", 48, 100);
+  printText("Yet Another SpaceWar Clone (YASC)!", 48, 100);
   fill(players.get(0).colour);
   printText("Player 1", 32, 200);
   printText("WAD to move, S to shoot, E to Hyperspace", 32, 300);  
@@ -141,7 +141,7 @@ void gameOver()
 {
   background(0);
   fill(255);
-  printText("Yet Another Spacwars Clone (YASC)!", 48, 200);
+  printText("Yet Another SpaceWar Clone (YASC)!", 48, 200);
   printText("Game Over", 48, 350);  
   fill(players.get(winner).colour);
   printText("Player " + (winner + 1) + " is the winner", 32, 500);    
