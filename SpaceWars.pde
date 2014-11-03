@@ -56,6 +56,9 @@ void setup()
   ship.hyperDrive = 'o';
   children.add(ship);  
   players.add(ship);  
+  
+  players.get(0).colour = color(255, 0,0);
+  players.get(1).colour = color(0, 255,0);
  
   BigStar star = new BigStar();
   children.add(star);
@@ -109,8 +112,7 @@ void reset()
         child.alive = false;
       }
   }
-  players.get(0).colour = color(255, 0,0);
-  players.get(1).colour = color(0, 255,0);
+  
   textY = 20;
 }
 
@@ -118,8 +120,15 @@ void splash()
 {
   background(0);
   fill(255);
-  printText("Yet Another Spacwars Clone (YASC)!", 48, 300);
-  printText("Press SPACE to begin", 32, 500);  
+  printText("Yet Another Spacwars Clone (YASC)!", 48, 100);
+  fill(players.get(0).colour);
+  printText("Player 1", 32, 200);
+  printText("WAD to move, S to shoot, E to Hyperspace", 32, 300);  
+  fill(players.get(1).colour);
+  printText("Player 2", 32, 400);
+  printText("IJL to move, K to shoot, O to Hyperspace", 32, 500);
+  fill(255);
+  printText("Press SPACE to play", 32, 600);  
   if (checkKey(' '))
   {
     reset();
@@ -135,8 +144,8 @@ void gameOver()
   printText("Game Over", 48, 350);  
   fill(players.get(winner).colour);
   printText("Player " + (winner + 1) + " is the winner", 32, 500);    
-  fill(255);
-  printText("Press SPACE to restart", 32, 650);  
+  fill(255);  
+  printText("Press SPACE to play", 32, 650);  
   if (checkKey(' '))
   {
     gameState = 0;
