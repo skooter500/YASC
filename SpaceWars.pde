@@ -128,7 +128,8 @@ void splash()
   printText("Player 2", 32, 400);
   printText("IJL to move, K to shoot, O to Hyperspace", 32, 500);
   fill(255);
-  printText("Press SPACE to play", 32, 600);  
+  printText("Programmed by Bryan Duggan", 32, 600);
+  printText("Press SPACE to play", 32, 700);  
   if (checkKey(' '))
   {
     reset();
