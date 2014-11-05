@@ -8,7 +8,7 @@ class BigStar extends GameObject
     position.x = width / 2;
     position.y = height / 2;
     w = 50;
-    points = 5;
+    points = 20;
     rot = 0.0f;
     rotSpeed = 0.05f;
     colour = color(255, 255, 0);

@@ -19,6 +19,7 @@ class Ship extends GameObject
   int shieldEllapsedFrames;
   int shieldToPassFrames;
   AudioPlayer shootSound;
+  AudioPlayer hyperDriveSound;
   boolean jet;
   
   Ship()
@@ -64,6 +65,8 @@ class Ship extends GameObject
       
       if (checkKey(hyperDrive) && hyper > 0 && ! lastPressed)
       {
+        hyperDriveSound.rewind();
+        hyperDriveSound.play();        
         position.x = random(0, width);
         position.y = random(0, height);        
         hyper --;

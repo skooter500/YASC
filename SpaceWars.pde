@@ -41,13 +41,15 @@ void setup()
   spawnPoints.add(new PVector(width - 50, height / 2));
   
   Ship ship = new Ship();
-  ship.shootSound = minim.loadFile("Laser_Shoot10.wav");;
+  ship.shootSound = minim.loadFile("Laser_Shoot10.wav");
+  ship.hyperDriveSound = minim.loadFile("Powerup2.wav");
   ship.position = spawnPoints.get(0).get();
   children.add(ship);      
   players.add(ship);
   
   ship = new Ship();
   ship.shootSound = minim.loadFile("Laser_Shoot20.wav");
+  ship.hyperDriveSound = minim.loadFile("Powerup5.wav");
   ship.position = spawnPoints.get(1).get();
   ship.forward = 'i';
   ship.left = 'j';
