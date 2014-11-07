@@ -1,4 +1,5 @@
 import ddf.minim.*;
+import procontroll.*;
  
 PFont font;
 int textY;
@@ -10,12 +11,21 @@ ArrayList<PVector> spawnPoints = new ArrayList<PVector>();
 
 boolean[] keys = new boolean[526];
 ArrayList<GameObject> children = new ArrayList<GameObject>();
+ArrayList<ControllDevice> devices = new ArrayList<ControllDevice>();
+
+color[] colours = {
+  color(255, 0,0)
+  ,color(0, 255,0)
+  ,color(255, 255,0)
+  ,color(0, 255,255)
+};
 
 int gameState = 0;
 int winner = 0;
 int numStars = 100;
 
 SpaceWars instance;
+ControllIO controll;
 
 Minim minim;//audio context
 AudioPlayer explosion;
@@ -25,45 +35,27 @@ void addGameObject(GameObject o)
   children.add(o);
 }
 
-
 boolean sketchFullScreen() {
-  return true;
+  return false;
 }
 
 void setup()
 {
-  size(displayWidth, displayHeight);
+  size(800, 600);
   noCursor();
   minim = new Minim(this);  
   instance = this;
   
+  controll = ControllIO.getInstance(this);
+  
   spawnPoints.add(new PVector(50, height / 2));
   spawnPoints.add(new PVector(width - 50, height / 2));
-  
-  Ship ship = new Ship();
-  ship.shootSound = minim.loadFile("Laser_Shoot10.wav");
-  ship.hyperDriveSound = minim.loadFile("Powerup2.wav");
-  ship.position = spawnPoints.get(0).get();
-  children.add(ship);      
-  players.add(ship);
-  
-  ship = new Ship();
-  ship.shootSound = minim.loadFile("Laser_Shoot20.wav");
-  ship.hyperDriveSound = minim.loadFile("Powerup5.wav");
-  ship.position = spawnPoints.get(1).get();
-  ship.forward = 'i';
-  ship.left = 'j';
-  ship.right = 'l';
-  ship.fire = 'k';
-  ship.hyperDrive = 'o';
-  children.add(ship);  
-  players.add(ship);  
-  
-  players.get(0).colour = color(255, 0,0);
-  players.get(1).colour = color(0, 255,0);
- 
+  spawnPoints.add(new PVector(width - 50, height / 2));
+  spawnPoints.add(new PVector(width - 50, height / 2));
+   
   BigStar star = new BigStar();
   children.add(star);
+  
   stars.add(star);    
   
   for (int i = 0 ; i < 100 ; i ++)
@@ -122,16 +114,9 @@ void splash()
 {
   background(0);
   fill(255);
-  printText("Yet Another SpaceWar Clone (YASC)!", 48, 100);
-  fill(players.get(0).colour);
-  printText("Player 1", 32, 200);
-  printText("WAD to move, S to shoot, E to Hyperspace", 32, 300);  
-  fill(players.get(1).colour);
-  printText("Player 2", 32, 400);
-  printText("IJL to move, K to shoot, O to Hyperspace", 32, 500);
-  fill(255);
-  printText("Programmed by Bryan Duggan", 32, 600);
-  printText("Press SPACE to play", 32, 700);  
+  printText("Yet Another SpaceWar Clone (YASC)!", 48, 100);  
+  printText("Programmed by Bryan Duggan", 32, 200);
+  printText("Press SPACE to play", 32, 300);  
   if (checkKey(' '))
   {
     reset();
@@ -155,9 +140,55 @@ void gameOver()
   }
 }
 
+void checkForNewControllers()
+{
+  // Add all the xbox controllers
+  for(int i = 0; i < controll.getNumberOfDevices(); i++){
+    ControllDevice device = controll.getDevice(i);
+    if (device.getName().indexOf("XBOX") != -1)
+    {
+      if (! devices.contains(device))
+      {
+        devices.add(device);
+      }
+    }    
+  }
+}
+
+void enumerate()
+{
+  for (int i = 0 ; i < devices.size() ; i ++)
+  {
+    ControllDevice device = devices.get(i);
+    for (int j = 0 ; j < device.getNumberOfButtons() ; j ++)
+    {
+      ControllButton button = device.getButton(j);
+      println(j + " " + button.pressed());
+    }
+  }
+}
+
+void checkForNewPlayers()
+{
+  for (int i = 0 ; i < devices.size() ; i ++)
+  {
+    if (i > players.size() - 1)
+    {
+      Ship player = new Ship();
+      player.colour = colours[i];
+      player.position = spawnPoints.get(i);
+      children.add(player);
+      players.add(player);
+    }
+  }
+}
+
 void game()
 {  
-  applyGravity();
+  checkForNewControllers();
+  checkForNewPlayers();
+  //enumerate();
+  //  applyGravity();
   for (int i = children.size()-1; i >= 0; i--) 
   {
     GameObject entity = children.get(i);

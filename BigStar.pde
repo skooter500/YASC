@@ -10,7 +10,7 @@ class BigStar extends GameObject
     w = 50;
     points = 20;
     rot = 0.0f;
-    rotSpeed = 0.05f;
+    rotSpeed = 0.01f;
     colour = color(255, 255, 0);
   }
   

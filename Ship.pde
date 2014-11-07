@@ -102,7 +102,6 @@ class Ship extends GameObject
       velocity.add(PVector.mult(acceleration, timeDelta));      
       
       position.add(PVector.mult(velocity, timeDelta));
-      println();
       // Apply damping
       velocity.mult(0.99f);
       
