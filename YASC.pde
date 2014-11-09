@@ -14,10 +14,10 @@ ArrayList<GameObject> children = new ArrayList<GameObject>();
 ArrayList<ControllDevice> devices = new ArrayList<ControllDevice>();
 
 color[] colours = {
-  color(195, 79,226)
+  color(12, 245, 209)
   ,color(0, 255,0)
   ,color(255, 255,0)
-  ,color(0, 255,255)
+  ,color(226, 127,79)
 };
 
 int gameState = 0;
@@ -26,7 +26,7 @@ int numStars = 100;
 float spawnInterval = 10.0f;
 
 int CENTRED = -1;
-
+bool gameBegun;
 ControllIO controll;
 
 Minim minim;//audio context
@@ -85,6 +85,7 @@ void reset()
   children.clear();
   players.clear();
   devices.clear();
+  gameBegun = false;
   
   BigStar star = new BigStar();
   children.add(star);
@@ -156,6 +157,11 @@ void checkForNewControllers()
           println("New player joined");
           devices.add(device);        
           int j = players.size();
+          if (j == 1)
+          {
+            gameBegun = true;
+          }          
+          
           Ship player = new Ship(device);
           player.colour = colours[j];
           player.position = spawnPoints.get(j).get();
@@ -273,12 +279,17 @@ void game()
     fill(player.colour);
     printText("Player: " + (i + 1) + " Hyperdrive: " + player.hyper + " Lives: " + player.lives + "Ammo: " + player.ammo, 32, 10, th * (i + 1));
     if (player.lives == 0)
-    {
-      gameState = 2;
-      winner = 1 - i;
+    {      
+      children.remove(player);
+      players.remove(player);      
       break;
     }
-  }   
+  }  
+ 
+ if (players.size() == 1 && gameBegun)
+ {
+   gameState = 2;
+ } 
  
 }
 
