@@ -1,6 +1,7 @@
 import ddf.minim.*;
 import procontroll.*;
- 
+import de.ilu.movingletters.*;
+
 PFont font;
 int textY;
 
@@ -32,6 +33,11 @@ ControllIO controll;
 Minim minim;//audio context
 AudioPlayer explosion;
 AudioPlayer powerupSound;
+MovingLetters letters;
+MovingLetters smallLetters;
+MovingLetters mediumLetters;
+MovingLetters largeLetters;
+
 
 void addGameObject(GameObject o)
 {
@@ -39,13 +45,17 @@ void addGameObject(GameObject o)
 }
 
 boolean sketchFullScreen() {
-  return true;
+  return false;
 }
+
+
 
 void setup()
 {
   size(displayWidth, displayHeight);
   noCursor();
+  
+  letters = new MovingLetters(this, 40, 1, 0);
   minim = new Minim(this);  
   instance = this;
   
@@ -58,6 +68,25 @@ void setup()
   font = loadFont("Checkbook-48.vlw");    
   explosion = minim.loadFile("Explosion4.wav");
   powerupSound = minim.loadFile("powerup.wav");
+}
+
+void printText(String text, int size, int x, int y)
+{
+  stroke(255);
+  if (x == CENTRED)
+  {
+    x = (width / 2) - (40 * text.length() / 2);
+  }
+  letters.text(text, x, y);
+  /*
+  textFont(font, size);
+  int tw = (int) textWidth(text);
+  if (x == CENTRED)
+  {
+    x = (width / 2) - (tw / 2);
+  }
+  text(text, x, y);
+  */
 }
 
 void applyGravity()
@@ -306,16 +335,7 @@ void spawnPowerup()
 }
 
 
-void printText(String text, int size, int x, int y)
-{
-  textFont(font, size);
-  int tw = (int) textWidth(text);
-  if (x == CENTRED)
-  {
-    x = (width / 2) - (tw / 2);
-  }
-  text(text, x, y);
-}
+
 
 void draw()
 {
