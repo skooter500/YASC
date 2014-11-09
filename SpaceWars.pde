@@ -39,7 +39,7 @@ void addGameObject(GameObject o)
 }
 
 boolean sketchFullScreen() {
-  return false;
+  return true;
 }
 
 void setup()
@@ -53,8 +53,8 @@ void setup()
   
   spawnPoints.add(new PVector(50, height / 2));
   spawnPoints.add(new PVector(width - 50, height / 2));
-  spawnPoints.add(new PVector(width - 50, height / 2));
-  spawnPoints.add(new PVector(width - 50, height / 2));
+  spawnPoints.add(new PVector(width / 2, height - 50));
+  spawnPoints.add(new PVector(width / 2, 50));
   font = loadFont("Checkbook-48.vlw");    
   explosion = minim.loadFile("Explosion4.wav");
   powerupSound = minim.loadFile("powerup.wav");
