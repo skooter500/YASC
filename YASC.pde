@@ -15,19 +15,18 @@ ArrayList<GameObject> children = new ArrayList<GameObject>();
 ArrayList<ControllDevice> devices = new ArrayList<ControllDevice>();
 
 color[] colours = {
-  color(255, 0,0)
+  color(12, 245, 209)
   ,color(0, 255,0)
   ,color(255, 255,0)
-  ,color(0, 255,255)
+  ,color(226, 127,79)
 };
 
 int gameState = 0;
-int winner = 0;
 int numStars = 100;
 float spawnInterval = 10.0f;
 
 int CENTRED = -1;
-SpaceWars instance;
+boolean gameBegun;
 ControllIO controll;
 
 Minim minim;//audio context
@@ -57,7 +56,7 @@ void setup()
   
   letters = new MovingLetters(this, 40, 1, 0);
   minim = new Minim(this);  
-  instance = this;
+
   
   controll = ControllIO.getInstance(this);
   
@@ -114,6 +113,7 @@ void reset()
   children.clear();
   players.clear();
   devices.clear();
+  gameBegun = false;
   
   BigStar star = new BigStar();
   children.add(star);
@@ -148,11 +148,11 @@ void gameOver()
   fill(255);
   printText("Yet Another SpaceWar Clone (YASC)!", 48, CENTRED, 200);
   printText("Game Over", 48, CENTRED, 350);
-  if (winner > 0)
-  {  
-    fill(players.get(winner).colour);
-    printText("Player " + (winner + 1) + " is the winner", 32, CENTRED, 500);
-  }    
+  fill(players.get(0).colour);
+  if (frameCount / 60 % 2 == 0)
+  {
+    printText("Winner!", 48, CENTRED, 500);
+  }
   fill(255);  
   printText("Press SPACE to play", 32, CENTRED, 650);  
   if (checkKey(' '))
@@ -185,6 +185,11 @@ void checkForNewControllers()
           println("New player joined");
           devices.add(device);        
           int j = players.size();
+          if (j == 1)
+          {
+            gameBegun = true;
+          }          
+          
           Ship player = new Ship(device);
           player.colour = colours[j];
           player.position = spawnPoints.get(j).get();
@@ -302,12 +307,17 @@ void game()
     fill(player.colour);
     printText("Player: " + (i + 1) + " Hyperdrive: " + player.hyper + " Lives: " + player.lives + "Ammo: " + player.ammo, 32, 10, th * (i + 1));
     if (player.lives == 0)
-    {
-      gameState = 2;
-      winner = 1 - i;
+    {      
+      children.remove(player);
+      players.remove(player);      
       break;
     }
-  }   
+  }  
+ 
+ if (players.size() == 1 && gameBegun)
+ {
+   gameState = 2;
+ } 
  
 }
 

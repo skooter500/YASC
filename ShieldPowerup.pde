@@ -10,7 +10,7 @@ class ShieldPowerup extends GameObject implements Powerup
     position = randomOffscreenPoint(w);      
     theta = 0.0f;
     radius = w / 2.0f;
-    colour = color(12, 245, 209);
+    colour = color(195, 79,226);
     mass = 10.0f;
     drawVectors = true;
   }
