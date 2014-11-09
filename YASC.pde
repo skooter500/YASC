@@ -1,8 +1,12 @@
+// Uses the following Processing libraries:
+// http://www.foobarquarium.de/blog/processing/MovingLetters/
+// http://creativecomputing.cc/p5libs/procontroll/
+
+
 import ddf.minim.*;
 import procontroll.*;
 import de.ilu.movingletters.*;
 
-PFont font;
 int textY;
 
 float timeDelta = 1.0f / 60.0f;
@@ -18,7 +22,7 @@ color[] colours = {
   color(12, 245, 209)
   ,color(0, 255,0)
   ,color(255, 255,0)
-  ,color(226, 127,79)
+  ,color(0, 0,255)
 };
 
 int gameState = 0;
@@ -32,11 +36,7 @@ ControllIO controll;
 Minim minim;//audio context
 AudioPlayer explosion;
 AudioPlayer powerupSound;
-MovingLetters letters;
-MovingLetters smallLetters;
-MovingLetters mediumLetters;
-MovingLetters largeLetters;
-
+MovingLetters[] letters = new MovingLetters[3];
 
 void addGameObject(GameObject o)
 {
@@ -44,7 +44,7 @@ void addGameObject(GameObject o)
 }
 
 boolean sketchFullScreen() {
-  return false;
+  return true;
 }
 
 
@@ -54,38 +54,29 @@ void setup()
   size(displayWidth, displayHeight);
   noCursor();
   
-  letters = new MovingLetters(this, 40, 1, 0);
+  for (font_size size:font_size.values())
+  {
+    letters[size.index] = new MovingLetters(this, size.size, 1, 0);
+  }
+ 
   minim = new Minim(this);  
-
-  
   controll = ControllIO.getInstance(this);
   
   spawnPoints.add(new PVector(50, height / 2));
   spawnPoints.add(new PVector(width - 50, height / 2));
   spawnPoints.add(new PVector(width / 2, height - 50));
   spawnPoints.add(new PVector(width / 2, 50));
-  font = loadFont("Checkbook-48.vlw");    
   explosion = minim.loadFile("Explosion4.wav");
   powerupSound = minim.loadFile("powerup.wav");
 }
 
-void printText(String text, int size, int x, int y)
+void printText(String text, font_size size, int x, int y)
 {
-  stroke(255);
   if (x == CENTRED)
   {
-    x = (width / 2) - (40 * text.length() / 2);
+    x = (width / 2) - (int) (size.size * (float) text.length() / 2.5f);
   }
-  letters.text(text, x, y);
-  /*
-  textFont(font, size);
-  int tw = (int) textWidth(text);
-  if (x == CENTRED)
-  {
-    x = (width / 2) - (tw / 2);
-  }
-  text(text, x, y);
-  */
+  letters[size.index].text(text, x, y);  
 }
 
 void applyGravity()
@@ -131,10 +122,10 @@ void splash()
 {
 
   background(0);
-  fill(255);
-  printText("Yet Another SpaceWar Clone (YASC)!", 48, CENTRED, 100);  
-  printText("Programmed by Bryan Duggan", 32, CENTRED, 200);
-  printText("Press SPACE to play", 32, CENTRED, 300);  
+  stroke(255);
+  printText("Yet Another SpaceWar Clone (YASC)!", font_size.large, CENTRED, 100);  
+  printText("Programmed by Bryan Duggan", font_size.large, CENTRED, 200);
+  printText("Press SPACE to play", font_size.large, CENTRED, 300);  
   if (checkKey(' '))
   {
     reset();
@@ -146,15 +137,16 @@ void gameOver()
 {
   background(0);
   fill(255);
-  printText("Yet Another SpaceWar Clone (YASC)!", 48, CENTRED, 200);
-  printText("Game Over", 48, CENTRED, 350);
-  fill(players.get(0).colour);
+  stroke(255);
+  printText("Yet Another SpaceWar Clone (YASC)!", font_size.large, CENTRED, 200);
+  printText("Game Over", font_size.large, CENTRED, 350);
+  stroke(players.get(0).colour);
   if (frameCount / 60 % 2 == 0)
   {
-    printText("Winner!", 48, CENTRED, 500);
+    printText("Winner!", font_size.large, CENTRED, 500);
   }
-  fill(255);  
-  printText("Press SPACE to play", 32, CENTRED, 650);  
+  stroke(255);  
+  printText("Press SPACE to play", font_size.large, CENTRED, 650);  
   if (checkKey(' '))
   {
     gameState = 0;
@@ -300,12 +292,12 @@ void game()
   spawnPowerup();
   
   // Check for a winner and print the score...
-  int th = 50;
+  int th = 25;
   for (int i = 0 ; i < players.size() ; i ++)
   {
     Ship player = players.get(i);
-    fill(player.colour);
-    printText("Player: " + (i + 1) + " Hyperdrive: " + player.hyper + " Lives: " + player.lives + "Ammo: " + player.ammo, 32, 10, th * (i + 1));
+    stroke(player.colour);
+    printText("Player: " + (i + 1) + " Hyperdrive: " + player.hyper + " Lives: " + player.lives + " Ammo: " + player.ammo, font_size.small, 10, th * (i + 1));
     if (player.lives == 0)
     {      
       children.remove(player);

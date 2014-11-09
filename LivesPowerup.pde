@@ -12,7 +12,7 @@ class LivesPowerup extends GameObject implements Powerup
   
   void applyTo(Ship ship)
   {
-    ship.lives += (int) random(1, 5);
+    ship.lives += 1;
   }
   
   void update()
