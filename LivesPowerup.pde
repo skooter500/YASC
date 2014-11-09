@@ -6,7 +6,7 @@ class LivesPowerup extends GameObject implements Powerup
     h = 20;
     position = randomOffscreenPoint(w);        
     theta = 0.0f;
-    colour = color(245, 12, 191);
+    colour = color(255, 0, 0);
     mass = 10.0f;
   }  
   

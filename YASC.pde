@@ -21,12 +21,11 @@ color[] colours = {
 };
 
 int gameState = 0;
-int winner = 0;
 int numStars = 100;
 float spawnInterval = 10.0f;
 
 int CENTRED = -1;
-bool gameBegun;
+boolean gameBegun;
 ControllIO controll;
 
 Minim minim;//audio context
@@ -120,11 +119,11 @@ void gameOver()
   fill(255);
   printText("Yet Another SpaceWar Clone (YASC)!", 48, CENTRED, 200);
   printText("Game Over", 48, CENTRED, 350);
-  if (winner > 0)
-  {  
-    fill(players.get(winner).colour);
-    printText("Player " + (winner + 1) + " is the winner", 32, CENTRED, 500);
-  }    
+  fill(players.get(0).colour);
+  if (frameCount / 60 % 2 == 0)
+  {
+    printText("Winner!", 48, CENTRED, 500);
+  }
   fill(255);  
   printText("Press SPACE to play", 32, CENTRED, 650);  
   if (checkKey(' '))
