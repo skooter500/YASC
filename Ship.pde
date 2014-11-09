@@ -1,12 +1,14 @@
+
+
 class Ship extends GameObject
 {  
-  float spin = 0.1f;
   float fireRate = 5.0f;
   float toPass = 1.0f / fireRate;
   float elapsed = toPass;
   
-  int lives = 5;
+  int lives = 1;
   int hyper  = 5;
+  int ammo = 20;
   
   char forward;
   char left;
@@ -20,6 +22,9 @@ class Ship extends GameObject
   int shieldToPassFrames;
   AudioPlayer shootSound;
   AudioPlayer hyperDriveSound;
+  
+  ControllDevice device;
+  
   boolean jet;
   
   Ship()
@@ -29,22 +34,29 @@ class Ship extends GameObject
     shieldToPassFrames = 300;
     shieldEllapsedFrames = 0;
     position.x = width / 2;
-    position.y = height / 2;    
-    drawVectors = false;
-    forward = 'w';
-    left = 'a';
-    right = 'd';
-    fire = 's';    
-    hyperDrive = 'e';
+    position.y = height / 2;
+
+    angularVelocity = 2.0f;
+      
+  }
+  
+  float angularVelocity;
+  
+  Ship(ControllDevice device)
+  {
+    this();
+    this.device = device;
   }
   
   boolean lastPressed = false;
+  
   
   void update()
   {                 
       elapsed += timeDelta;
       float newtons = 300.0f;
-      if (checkKey(forward))
+      
+      if (device.getSlider(4).getValue() > 0.5f)
       {     
           force.add(PVector.mult(look, newtons));
           jet = true;
@@ -52,39 +64,37 @@ class Ship extends GameObject
       else
       {
         jet = false;
-      }
-      if (checkKey(left))
+      }     
+      
+      if (device.getSlider(1).getValue() < - 0.5f)
       {
-        theta -= timeDelta;
+        theta -= timeDelta * angularVelocity;
       }    
       
-      if (checkKey(right))
+      if (device.getSlider(1).getValue() > 0.5f)
       {
-        theta += timeDelta;
+        theta += timeDelta * angularVelocity;
       }
       
-      if (checkKey(hyperDrive) && hyper > 0 && ! lastPressed)
+      if (device.getButton(1).pressed() && hyper > 0 && ! lastPressed)
       {
-        hyperDriveSound.rewind();
-        hyperDriveSound.play();        
+        playSound(hyperDriveSound);
         position.x = random(0, width);
         position.y = random(0, height);        
         hyper --;
         lastPressed = true;
       }
-      if (! checkKey(hyperDrive))
+      if (! device.getButton(1).pressed())
       {
         lastPressed = false;
-      }
-      
+      }      
       
       look.x = sin(theta);
       look.y = -cos(theta);
       
-      if (checkKey(fire)  && elapsed > toPass)
+      if (device.getButton(0).pressed() && elapsed > toPass && ammo > 0)
       {
-        shootSound.rewind();
-        shootSound.play();
+        playSound(shootSound);
         Lazer lazer = new Lazer();
         lazer.position = position.get();
         PVector offset = look.get();
@@ -96,6 +106,7 @@ class Ship extends GameObject
         lazer.velocity = lazerVelocity;
         addGameObject(lazer);
         elapsed = 0.0f;
+        ammo --;
       }
       
       PVector acceleration = PVector.div(force, mass);
@@ -141,12 +152,12 @@ class Ship extends GameObject
       super.update();             
   }
   
-  void resetShield()
+  void resetShield(float duration)
   {
     shield = true;
     drawShield = true;
-    theta = 0;
     shieldEllapsedFrames = 0;
+    this.shieldToPassFrames = (int) duration * 60;
   }
   
   void draw()

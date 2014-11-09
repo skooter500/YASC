@@ -45,6 +45,61 @@ class GameObject
     //right = PVector.fromAngle(theta);
   }
   
+  void integrate()
+  {
+    PVector acceleration = PVector.div(force, mass);
+    velocity.add(PVector.mult(acceleration, timeDelta));          
+    position.add(PVector.mult(velocity, timeDelta));    
+    force.setMag(0);      
+  }
+  
+  PVector randomOffscreenPoint(float border)
+  {
+    int i = (int) random(0, 5);
+    float x = 0, y = 0;
+    switch(i)
+    {
+      case 0:
+        x = random(0, width);
+        y = -border;
+        break;
+      case 1:
+        x = random(0, width);
+        y = height + border;
+        break;     
+      case 2:        
+        x = -border;
+        y = random(0, height);
+        break;
+      case 3:
+        x = width + border;
+        y = random(0, height);
+        break;
+    }      
+    return new PVector(x, y);    
+  }
+  
+  void wrap()
+  {
+    if (position.x > width)
+    {
+      position.x = 0;
+    }
+    if (position.x < 0)
+    {
+      position.x = width;
+    }
+    
+    if (position.y > height)
+    {
+      position.y = 0;
+    }
+    if (position.y < 0)
+    {
+      position.y = height;
+    }
+  }
+  
   void draw()
   {
     if (drawVectors)
