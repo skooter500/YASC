@@ -7,8 +7,6 @@ import ddf.minim.*;
 import procontroll.*;
 import de.ilu.movingletters.*;
 
-int textY;
-
 float timeDelta = 1.0f / 60.0f;
 ArrayList<Ship> players = new ArrayList<Ship>();
 ArrayList<BigStar> stars = new ArrayList<BigStar>();
@@ -122,7 +120,7 @@ void splash()
 {
 
   background(0);
-  stroke(255);
+  stroke(0, 0, 255);
   printText("Yet Another SpaceWar Clone (YASC)!", font_size.large, CENTRED, 100);  
   printText("Programmed by Bryan Duggan", font_size.large, CENTRED, 200);
   printText("Press SPACE to play", font_size.large, CENTRED, 300);  
