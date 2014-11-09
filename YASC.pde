@@ -14,7 +14,7 @@ ArrayList<GameObject> children = new ArrayList<GameObject>();
 ArrayList<ControllDevice> devices = new ArrayList<ControllDevice>();
 
 color[] colours = {
-  color(255, 0,0)
+  color(195, 79,226)
   ,color(0, 255,0)
   ,color(255, 255,0)
   ,color(0, 255,255)
@@ -26,7 +26,7 @@ int numStars = 100;
 float spawnInterval = 10.0f;
 
 int CENTRED = -1;
-SpaceWars instance;
+
 ControllIO controll;
 
 Minim minim;//audio context
@@ -47,7 +47,7 @@ void setup()
   size(displayWidth, displayHeight);
   noCursor();
   minim = new Minim(this);  
-  instance = this;
+
   
   controll = ControllIO.getInstance(this);
   
