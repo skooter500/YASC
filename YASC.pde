@@ -20,12 +20,12 @@ color[] colours = {
   color(12, 245, 209)
   ,color(0, 255,0)
   ,color(255, 255,0)
-  ,color(0, 0,255)
+  ,color(255, 192, 203)
 };
 
 int gameState = 0;
 int numStars = 100;
-float spawnInterval = 10.0f;
+float spawnInterval = 5.0f;
 
 int CENTRED = -1;
 boolean gameBegun;
@@ -112,18 +112,21 @@ void reset()
   {
      children.add(new SmallStar());
   }
-  
-  textY = 20;
 }
 
 void splash()
 {
 
   background(0);
-  stroke(0, 0, 255);
-  printText("Yet Another SpaceWar Clone (YASC)!", font_size.large, CENTRED, 100);  
-  printText("Programmed by Bryan Duggan", font_size.large, CENTRED, 200);
-  printText("Press SPACE to play", font_size.large, CENTRED, 300);  
+  stroke(255);
+  
+  printText("YASC", font_size.large, CENTRED, 100);  
+  printText("Yet Another Spacewar Clone", font_size.large, CENTRED, 200);  
+  printText("Programmed by Bryan Duggan", font_size.large, CENTRED, 300);
+  if (frameCount / 60 % 2 == 0)
+  {
+    printText("Press SPACE to play", font_size.large, CENTRED, height - 100);  
+  }
   if (checkKey(' '))
   {
     reset();
@@ -133,18 +136,19 @@ void splash()
 
 void gameOver()
 {
-  background(0);
   fill(255);
   stroke(255);
-  printText("Yet Another SpaceWar Clone (YASC)!", font_size.large, CENTRED, 200);
-  printText("Game Over", font_size.large, CENTRED, 350);
+  
+  printText("YASC", font_size.large, CENTRED, 100);  
+  printText("Yet Another Spacewar Clone", font_size.large, CENTRED, 200);  
+  printText("Game Over", font_size.large, CENTRED, 300);
   stroke(players.get(0).colour);
   if (frameCount / 60 % 2 == 0)
   {
-    printText("Winner!", font_size.large, CENTRED, 500);
+    printText("Winner!", font_size.large, CENTRED, 400);
   }
   stroke(255);  
-  printText("Press SPACE to play", font_size.large, CENTRED, 650);  
+  printText("Press SPACE to play", font_size.large, CENTRED, height - 100);  
   if (checkKey(' '))
   {
     gameState = 0;
@@ -209,14 +213,21 @@ void enumerate()
   }
 }
 
-void game()
+void game(boolean update)
 {  
-  checkForNewControllers();
-  applyGravity();
+  if (update)
+  {
+    checkForNewControllers();
+    applyGravity();
+  }
+  
   for (int i = children.size()-1; i >= 0; i--) 
   {
     GameObject entity = children.get(i);
-    entity.update();
+    if (update)
+    {
+      entity.update();
+    }
     entity.draw();
     if (! entity.alive) 
     {
@@ -347,9 +358,10 @@ void draw()
       splash();
       break;
     case 1:
-      game();
+      game(true);
       break;
     case 2:
+      game(false);
       gameOver();
       break;  
   }

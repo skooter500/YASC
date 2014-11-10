@@ -12,7 +12,7 @@ class AmmoPowerup extends GameObject implements Powerup
   
   void applyTo(Ship ship)
   {
-    ship.ammo += (int) random(10, 20);
+    ship.ammo += (int) random(50, 100);
   }
   
   void update()

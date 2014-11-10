@@ -6,9 +6,9 @@ class Ship extends GameObject
   float toPass = 1.0f / fireRate;
   float elapsed = toPass;
   
-  int lives = 5;
+  int lives = 3;
   int hyper  = 5;
-  int ammo = 20;
+  int ammo = 100;
   
   char forward;
   char left;
@@ -37,6 +37,7 @@ class Ship extends GameObject
     position.y = height / 2;
 
     angularVelocity = 2.0f;
+    mass = 2.0f;
       
   }
   
