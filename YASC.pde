@@ -15,7 +15,7 @@ int gameState = 0;
 int winner = 0;
 int numStars = 100;
 
-SpaceWars instance;
+YASC instance;
 
 Minim minim;//audio context
 AudioPlayer explosion;
