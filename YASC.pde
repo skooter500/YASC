@@ -189,8 +189,8 @@ void checkForNewControllers()
           player.position = spawnPoints.get(j).get();
           player.resetShield(10);
           player.theta = 0;
-          player.shootSound = minim.loadFile("laser" + j + ".wav");
-          player.hyperDriveSound = minim.loadFile("hyper" + j + ".wav");
+          //player.shootSound = minim.loadFile("laser" + j + ".wav");
+          //player.hyperDriveSound = minim.loadFile("hyper" + j + ".wav");
           playSound(player.hyperDriveSound);
           children.add(player);
           players.add(player);
