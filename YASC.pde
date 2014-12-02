@@ -27,7 +27,7 @@ void addGameObject(GameObject o)
 
 
 boolean sketchFullScreen() {
-  return true;
+  return false;
 }
 
 void setup()
@@ -246,6 +246,7 @@ void draw()
       game();
       break;
     case 2:
+      
       gameOver();
       break;  
   }
@@ -253,11 +254,7 @@ void draw()
 
 boolean checkKey(int k)
 {
-  if (keys.length >= k) 
-  {
-    return keys[k] || keys[Character.toUpperCase(k)];  
-  }
-  return false;
+  return keys[k];
 }
 
 void mousePressed()
