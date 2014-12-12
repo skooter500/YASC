@@ -6,7 +6,7 @@ class Ship extends GameObject
   float toPass = 1.0f / fireRate;
   float elapsed = toPass;
   
-  int lives = 2;
+  int lives = 10;
   int hyper  = 5;
   int ammo = 100;
   
