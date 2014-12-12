@@ -6,7 +6,7 @@ class Ship extends GameObject
   float toPass = 1.0f / fireRate;
   float elapsed = toPass;
   
-  int lives = 10;
+  int lives = 2;
   int hyper  = 5;
   int ammo = 100;
   
@@ -22,13 +22,14 @@ class Ship extends GameObject
   int shieldToPassFrames;
   AudioPlayer shootSound;
   AudioPlayer hyperDriveSound;
-
   
+  int spawnIndex;
+
   ControllDevice device;
   
   boolean jet;
 
- float halfwidth, halfheight;
+  float halfwidth, halfheight;
     
   Ship()
   {
@@ -42,7 +43,7 @@ class Ship extends GameObject
     position.y = height / 2;
 
     angularVelocity = 5.0f;
-    mass = 1.5f;
+    mass = 1.0f;
     
     vertices.add(new PVector(- halfwidth, halfheight));
     vertices.add(new PVector(0, - halfheight));

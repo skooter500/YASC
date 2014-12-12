@@ -16,6 +16,8 @@ boolean[] keys = new boolean[526];
 ArrayList<GameObject> children = new ArrayList<GameObject>();
 ArrayList<ControllDevice> devices = new ArrayList<ControllDevice>();
 
+int winnerIndex = 0;
+
 color[] colours = {
   color(12, 245, 209)
   ,color(0, 255,0)
@@ -25,7 +27,7 @@ color[] colours = {
 
 int gameState = 0;
 int numStars = 100;
-float spawnInterval = 10.0f;
+float spawnInterval = 5.0f;
 
 int CENTRED = -1;
 boolean gameBegun;
@@ -129,6 +131,7 @@ void reset()
   {
      children.add(new SmallStar());
   }
+  soundtrack.setGain(14);
   playSound(soundtrack, true);
 }
 
@@ -160,16 +163,17 @@ void gameOver()
   printText("YASC", font_size.large, CENTRED, 100);  
   printText("Yet Another Spacewar Clone", font_size.large, CENTRED, 200);  
   printText("Game Over", font_size.large, CENTRED, 300);
-  stroke(players.get(0).colour);
+  stroke(colours[winnerIndex]);
   if (frameCount / 60 % 2 == 0)
   {
     printText("Winner!", font_size.large, CENTRED, 400);
   }
   stroke(255);  
-  printText("Press SPACE to play", font_size.large, CENTRED, height - 100);  
+  printText("Press SPACE to play again", font_size.large, CENTRED, height - 100);  
   if (checkKey(' '))
   {
-    gameState = 0;
+    reset();
+    gameState = 1;
   }
 }
 
@@ -218,9 +222,9 @@ void checkForNewControllers()
           if (j == 1)
           {
             gameBegun = true;            
-          }          
-          
+          }                    
           Ship player = new Ship(device);
+          player.spawnIndex = j;
           player.colour = colours[j];
           player.position = spawnPoints.get(j).get();
           player.pointAtSun();          
@@ -251,11 +255,19 @@ void enumerate()
 
 void game(boolean update)
 {  
+  
   if (update)
   {
     checkForNewControllers();
     applyGravity();
   }
+  
+  if (players.size() == 1 && gameBegun)
+  {
+   soundtrack.pause();
+   winnerIndex = players.get(0).spawnIndex;
+   gameState = 2;
+  } 
   
   for (int i = children.size()-1; i >= 0; i--) 
   {
@@ -288,7 +300,7 @@ void game(boolean update)
           player.resetShield(5);
           player.theta = 0;
           player.velocity.x = player.velocity.y = 0;
-          player.position = spawnPoints.get(j).get();           
+          player.position = spawnPoints.get(player.spawnIndex).get();           
           player.pointAtSun();
           playSound(explosion);
         }
@@ -319,7 +331,7 @@ void game(boolean update)
           player.velocity.x = player.velocity.y = 0;
           player.lives --;
           player.resetShield(5);
-          player.position = spawnPoints.get(j).get();
+          player.position = spawnPoints.get(player.spawnIndex).get();
           player.pointAtSun();          
           playSound(explosion);
         }
@@ -337,8 +349,7 @@ void game(boolean update)
             playSound(explosion);
           }          
         }        
-      } 
-      
+      }       
     } 
   }  
   
@@ -350,20 +361,14 @@ void game(boolean update)
   {
     Ship player = players.get(i);
     stroke(player.colour);
-    printText("Player: " + (i + 1) + " Hyperdrive: " + player.hyper + " Lives: " + player.lives + " Ammo: " + player.ammo, font_size.small, (int)hudPositions.get(i).x, (int)hudPositions.get(i).y);
+    printText("Player: " + (i + 1) + " Hyperdrive: " + player.hyper + " Lives: " + player.lives + " Ammo: " + player.ammo, font_size.small, (int)hudPositions.get(player.spawnIndex).x, (int)hudPositions.get(player.spawnIndex).y);
     if (player.lives == 0)
     {      
       children.remove(player);
       players.remove(player);      
       break;
     }
-  }  
- 
- if (players.size() == 1 && gameBegun)
- {
-   gameState = 2;
- } 
- 
+  }    
 }
 
 void spawnPowerup()
@@ -426,7 +431,7 @@ void draw()
       game(true);
       break;
     case 2:
-      game(false);
+      game(true);
       gameOver();
       break;  
   }
