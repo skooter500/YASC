@@ -17,6 +17,9 @@ class GameObject
   color colour;
   PVector basis = new PVector(0, -1);
   
+  ArrayList<PVector> vertices = new ArrayList<PVector>();
+  
+  
   GameObject()
   {
     position = new PVector();
@@ -44,7 +47,7 @@ class GameObject
     //look = PVector.fromAngle(theta - HALF_PI);
     //right = PVector.fromAngle(theta);
   }
-  
+   
   void integrate()
   {
     PVector acceleration = PVector.div(force, mass);
@@ -55,7 +58,7 @@ class GameObject
   
   PVector randomOffscreenPoint(float border)
   {
-    int i = (int) random(0, 5);
+    int i = (int) random(0, 4);
     float x = 0, y = 0;
     switch(i)
     {

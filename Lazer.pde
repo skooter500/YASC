@@ -9,12 +9,12 @@ class Lazer extends GameObject
     h = 5.0f;
     mass = 0.2f;
     speed = 300.0f;
-    toLive = 5.0f;
+    toLive = 3.0f;
   }
   
   void update()
   {
-    
+   
     aliveFor += timeDelta;    
     if (aliveFor > toLive)
     {
@@ -31,12 +31,12 @@ class Lazer extends GameObject
   
   void draw()
   {
-    stroke(colour);
     pushMatrix();
     translate(position.x, position.y);
     rotate(theta);
     scale(scaleF);
-    
+    float alpha = (1.0f - aliveFor / toLive) * 255.0f;
+    stroke(red(colour), green(colour), blue(colour), (int)alpha); 
     line(0, - h / 2.0f, 0, h / 2.0f);
       
     popMatrix();        

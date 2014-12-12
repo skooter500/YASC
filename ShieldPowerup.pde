@@ -13,7 +13,63 @@ class ShieldPowerup extends GameObject implements Powerup
     colour = color(195, 79,226);
     mass = 10.0f;
     drawVectors = true;
+    
+    float scale = 0.4f;
+
+    float interval = 20; 
+    float angle = 60;
+    for(float theta = -angle ; theta < angle ; theta += interval)
+    {     
+      PVector start = new PVector();
+      start.x = sin(radians(theta)) * radius;
+      start.y = - cos(radians(theta)) * radius;
+      
+      PVector end = new PVector();
+      end.x = sin(radians(theta + interval)) * radius;
+      end.y = - cos(radians(theta + interval)) * radius;
+      
+      vertices.add(start);
+      vertices.add(end);      
+    } 
+    
+    vertices.add(new PVector(sin(radians(-angle)) * radius, - cos(radians(-angle)) * radius));
+    vertices.add(new PVector(sin(radians(-angle)) * radius * scale, 0));
+    
+    vertices.add(new PVector(sin(radians(angle)) * radius, - cos(radians(angle)) * radius));    
+    vertices.add(new PVector(sin(radians(angle)) * radius * scale, 0));
+   
+    //vertices.add(new PVector(sin(angle) * radius, - cos(angle) * radius));
+    //vertices.add(new PVector(sin(angle) * radius * scale, - cos(angle) * radius * scale));
+   
+   
+    for(float theta = 180 - angle ; theta <180 + angle ; theta += interval)
+    {
+      PVector start = new PVector();
+      start.x = sin(radians(theta)) * radius;
+      start.y = - cos(radians(theta)) * radius;
+
+      PVector end = new PVector();
+      end.x = sin(radians(theta + interval)) * radius;
+      end.y = - cos(radians(theta + interval)) * radius;
+      
+      vertices.add(start);
+      vertices.add(end);      
+    }  
+   
+    
+    vertices.add(new PVector(sin(radians(180-angle)) * radius, - cos(radians(180-angle)) * radius));
+   vertices.add(new PVector(sin(radians(180-angle)) * radius * scale, 0));
+    
+    vertices.add(new PVector(sin(radians(180 + angle)) * radius, - cos(radians(180  + angle)) * radius));    
+    vertices.add(new PVector(sin(radians(180 + angle)) * radius * scale, 0));
+    
   }
+  
+  PVector calcPos(float angle, float radius)
+  {
+    return new PVector(radius * sin(radians(angle)), - radius * cos(radians(angle)));
+  }
+  
   
   void update()
   {
@@ -26,11 +82,6 @@ class ShieldPowerup extends GameObject implements Powerup
     ship.resetShield(10);
   }
   
-  PVector calcPos(float angle, float radius)
-  {
-    return new PVector(radius * sin(radians(angle)), - radius * cos(radians(angle)));
-  }
-  
   void draw()
   {
     stroke(colour);
@@ -39,19 +90,13 @@ class ShieldPowerup extends GameObject implements Powerup
     translate(position.x, position.y);
     rotate(theta);
     
-    float scale = 3;
-    arc(0, 0, w, h, radians(90 + halfGap), radians(270 - halfGap));
-    arc(0, 0, w, h,radians(270 + halfGap), radians(450 - halfGap));
+    for (int i = 1 ; i < vertices.size() ; i += 2)
+    {
+        PVector from = vertices.get(i - 1);
+        PVector to = vertices.get(i);            
+        line(from.x, from.y, to.x, to.y);
+    }
     
-    PVector p = calcPos(-halfGap, radius);
-    line(p.x, p.y, 0, - radius / scale);
-    p = calcPos(halfGap, radius);
-    line(p.x, p.y, 0, - radius / scale);
-    
-    p = calcPos(180-halfGap, radius);
-    line(p.x, p.y, 0, radius / scale);
-    p = calcPos(180 + halfGap, radius);
-    line(p.x, p.y, 0, radius / scale);
     
     popMatrix();        
   }    

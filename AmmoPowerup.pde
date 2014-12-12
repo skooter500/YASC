@@ -8,6 +8,23 @@ class AmmoPowerup extends GameObject implements Powerup
     theta = 0.0f;
     colour = color(245, 160, 12);
     mass = 10.0f;
+    
+    int sides = 5;
+    float radius = w / 2.0f;
+    float thetaInc = TWO_PI / (float) sides;
+    float lastX = 0, lastY = - radius;
+    float x, y;
+    for (int i = 1 ; i <= sides ; i ++)
+    {
+      float theta1 = (float) i  * thetaInc;
+      x = sin(theta1) * radius;
+      y = -cos(theta1) * radius;
+      vertices.add(new PVector(lastX, lastY));  
+      vertices.add(new PVector(x, y));  
+      lastX = x;
+      lastY = y; 
+    }
+    
   }  
   
   void applyTo(Ship ship)
@@ -27,22 +44,13 @@ class AmmoPowerup extends GameObject implements Powerup
     noFill();
     pushMatrix();
     translate(position.x, position.y);
-    rotate(theta);
-    
-    int sides = 5;
-    float radius = w / 2.0f;
-    float thetaInc = TWO_PI / (float) sides;
-    float lastX = 0, lastY = - radius;
-    float x, y;
-    for (int i = 1 ; i <= sides ; i ++)
+    rotate(theta);    
+    for (int i = 1 ; i < vertices.size() ; i += 2)
     {
-      float theta1 = (float) i  * thetaInc;
-      x = sin(theta1) * radius;
-      y = -cos(theta1) * radius;
-      line(lastX, lastY, x, y);  
-      lastX = x;
-      lastY = y; 
-    }       
+        PVector from = vertices.get(i - 1);
+        PVector to = vertices.get(i);            
+        line(from.x, from.y, to.x, to.y);
+    }
     popMatrix();
   }  
 }

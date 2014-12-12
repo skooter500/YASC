@@ -22,26 +22,43 @@ class Ship extends GameObject
   int shieldToPassFrames;
   AudioPlayer shootSound;
   AudioPlayer hyperDriveSound;
+
   
   ControllDevice device;
   
   boolean jet;
-  
+
+ float halfwidth, halfheight;
+    
   Ship()
   {
     w = 20;
     h = 20;
+    halfwidth = w / 2.0f;
+    halfheight = h / 2.0f;
     shieldToPassFrames = 300;
     shieldEllapsedFrames = 0;
     position.x = width / 2;
     position.y = height / 2;
 
-    angularVelocity = 3.0f;
-    mass = 0.75f;
+    angularVelocity = 5.0f;
+    mass = 1.5f;
+    
+    vertices.add(new PVector(- halfwidth, halfheight));
+    vertices.add(new PVector(0, - halfheight));
+    vertices.add(new PVector(halfwidth, halfheight));
+    vertices.add(new PVector(0, - halfheight));
+    
+    vertices.add(new PVector(- halfwidth, halfheight));
+    vertices.add(new PVector(0, 0));
+    vertices.add(new PVector(halfwidth, halfheight));
+    vertices.add(new PVector(0, 0));
       
   }
   
   float angularVelocity;
+  float maxSpeed = 500;
+  float maxForce;
   
   Ship(ControllDevice device)
   {
@@ -55,9 +72,9 @@ class Ship extends GameObject
   void update()
   {                 
       elapsed += timeDelta;
-      float newtons = 300.0f;
+      float newtons = 400.0f;
       
-      if (device.getSlider(4).getValue() > 0.5f)
+      if ((device.getSlider(4).getValue() < -0.5f) || (device.getSlider(4).getValue() > 0.5f))
       {     
           force.add(PVector.mult(look, newtons));
           jet = true;
@@ -66,6 +83,7 @@ class Ship extends GameObject
       {
         jet = false;
       }     
+           
       
       if (device.getSlider(1).getValue() < - 0.5f)
       {
@@ -80,8 +98,8 @@ class Ship extends GameObject
       if (device.getButton(1).pressed() && hyper > 0 && ! lastPressed)
       {
         playSound(hyperDriveSound);
-        position.x = random(0, width);
-        position.y = random(0, height);        
+          position.x = random(0, width);
+          position.y = random(0, height);        
         hyper --;
         lastPressed = true;
       }
@@ -103,7 +121,7 @@ class Ship extends GameObject
         lazer.position.add(offset);
         lazer.theta = theta;
         lazer.colour = colour;
-        PVector lazerVelocity = PVector.mult(look, 300);
+        PVector lazerVelocity = PVector.mult(look, 400);
         lazer.velocity = lazerVelocity;
         addGameObject(lazer);
         elapsed = 0.0f;
@@ -111,7 +129,13 @@ class Ship extends GameObject
       }
       
       PVector acceleration = PVector.div(force, mass);
-      velocity.add(PVector.mult(acceleration, timeDelta));      
+      velocity.add(PVector.mult(acceleration, timeDelta));   
+   
+     if (velocity.mag() > maxSpeed)
+      {
+        velocity.normalize();
+        velocity.mult(maxSpeed);
+      }   
       
       position.add(PVector.mult(velocity, timeDelta));
       // Apply damping
@@ -153,6 +177,13 @@ class Ship extends GameObject
       super.update();             
   }
   
+  void pointAtSun()
+  {
+    PVector toCentre = new PVector(width / 2, height / 2);
+    toCentre.sub(position);
+    theta = toCentre.heading() + HALF_PI;     
+  }
+  
   void resetShield(float duration)
   {
     shield = true;
@@ -170,20 +201,20 @@ class Ship extends GameObject
     scale(scaleF);
     stroke(colour);
     noFill();
-    float halfwidth, halfheight;
-    halfwidth = w / 2.0f;
-    halfheight = h / 2.0f;
     
     if (shield && drawShield)
     {
       ellipse(0,0, w * 2, h * 2);
     }
     
-    line(- halfwidth, halfheight, 0, - halfheight);
-    line(halfwidth, halfheight, 0, - halfheight);
+    for (int i = 1 ; i < vertices.size() ; i += 2)
+    {
+        PVector from = vertices.get(i - 1);
+        PVector to = vertices.get(i);            
+        line(from.x, from.y, to.x, to.y);
+    }
     
-    line(- halfwidth, halfheight, 0, 0);
-    line(halfwidth, halfheight, 0, 0);
+    
     if (jet)
     {
       line(-2, 5, 0, 10);

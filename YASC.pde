@@ -2,7 +2,6 @@
 // http://www.foobarquarium.de/blog/processing/MovingLetters/
 // http://creativecomputing.cc/p5libs/procontroll/
 
-
 import ddf.minim.*;
 import procontroll.*;
 import de.ilu.movingletters.*;
@@ -11,6 +10,7 @@ float timeDelta = 1.0f / 60.0f;
 ArrayList<Ship> players = new ArrayList<Ship>();
 ArrayList<BigStar> stars = new ArrayList<BigStar>();
 ArrayList<PVector> spawnPoints = new ArrayList<PVector>();
+ArrayList<PVector> hudPositions = new ArrayList<PVector>();
 
 boolean[] keys = new boolean[526];
 ArrayList<GameObject> children = new ArrayList<GameObject>();
@@ -25,31 +25,41 @@ color[] colours = {
 
 int gameState = 0;
 int numStars = 100;
-float spawnInterval = 5.0f;
+float spawnInterval = 10.0f;
 
 int CENTRED = -1;
 boolean gameBegun;
 ControllIO controll;
 
 Minim minim;//audio context
+AudioPlayer soundtrack;
 AudioPlayer explosion;
 AudioPlayer powerupSound;
 MovingLetters[] letters = new MovingLetters[3];
+
+boolean devMode = false;
+ 
+boolean sketchFullScreen() {
+  return ! devMode;
+}
 
 void addGameObject(GameObject o)
 {
   children.add(o);
 }
 
-boolean sketchFullScreen() {
-  return true;
-}
-
-
 
 void setup()
 {
-  size(displayWidth, displayHeight);
+  if (devMode)
+  {
+    size(800, 600);
+  }
+  else
+  {
+    size(displayWidth, displayHeight);
+  }
+  smooth();
   noCursor();
   
   for (font_size size:font_size.values())
@@ -60,12 +70,19 @@ void setup()
   minim = new Minim(this);  
   controll = ControllIO.getInstance(this);
   
-  spawnPoints.add(new PVector(50, height / 2));
-  spawnPoints.add(new PVector(width - 50, height / 2));
-  spawnPoints.add(new PVector(width / 2, height - 50));
-  spawnPoints.add(new PVector(width / 2, 50));
+  spawnPoints.add(new PVector(50, 50));
+  spawnPoints.add(new PVector(width - 50, height- 50));
+  spawnPoints.add(new PVector(50, height - 50));
+  spawnPoints.add(new PVector(width - 50, 50));
+  
+  hudPositions.add(new PVector(10, 10));
+  hudPositions.add(new PVector(width - 480, height - 30));
+  hudPositions.add(new PVector(10, height - 30));
+  hudPositions.add(new PVector(width - 480, 10));
+  
   explosion = minim.loadFile("Explosion4.wav");
   powerupSound = minim.loadFile("powerup.wav");
+  soundtrack = minim.loadFile("soundtrack.mp3");  
 }
 
 void printText(String text, font_size size, int x, int y)
@@ -112,17 +129,18 @@ void reset()
   {
      children.add(new SmallStar());
   }
+  playSound(soundtrack, true);
 }
 
 void splash()
 {
-
   background(0);
   stroke(255);
   
   printText("YASC", font_size.large, CENTRED, 100);  
   printText("Yet Another Spacewar Clone", font_size.large, CENTRED, 200);  
   printText("Programmed by Bryan Duggan", font_size.large, CENTRED, 300);
+  printText("Music by Paul Bloof", font_size.large, CENTRED, 400);
   if (frameCount / 60 % 2 == 0)
   {
     printText("Press SPACE to play", font_size.large, CENTRED, height - 100);  
@@ -157,11 +175,29 @@ void gameOver()
 
 void playSound(AudioPlayer sound)
 {
+  playSound(sound, false);
+}
+
+void playSound(AudioPlayer sound, boolean loop)
+{
   if (sound == null)
   {
     return;
   }
-  sound.rewind();
+  sound.setGain(14);
+  if (!loop)
+  {
+    sound.rewind();
+  }
+  else
+  {
+    sound.loop();
+    if (sound.isPlaying())
+    {
+      return;
+    }
+  }    
+  
   sound.play(); 
 }
 
@@ -181,16 +217,16 @@ void checkForNewControllers()
           int j = players.size();
           if (j == 1)
           {
-            gameBegun = true;
+            gameBegun = true;            
           }          
           
           Ship player = new Ship(device);
           player.colour = colours[j];
           player.position = spawnPoints.get(j).get();
+          player.pointAtSun();          
           player.resetShield(10);
-          player.theta = 0;
-          //player.shootSound = minim.loadFile("laser" + j + ".wav");
-          //player.hyperDriveSound = minim.loadFile("hyper" + j + ".wav");
+          player.shootSound = minim.loadFile("laser" + j + ".wav");
+          player.hyperDriveSound = minim.loadFile("hyper" + j + ".wav");
           playSound(player.hyperDriveSound);
           children.add(player);
           players.add(player);
@@ -247,10 +283,13 @@ void game(boolean update)
         Ship player = players.get(j);
         if ((lazer.colour != player.colour) && ! player.shield && player.collides(lazer))
         {
+          addGameObject(new Explosion(player.vertices, player.position, player.colour));
           player.lives --;
           player.resetShield(5);
           player.theta = 0;
-          player.position = spawnPoints.get(j).get();
+          player.velocity.x = player.velocity.y = 0;
+          player.position = spawnPoints.get(j).get();           
+          player.pointAtSun();
           playSound(explosion);
         }
       }      
@@ -276,15 +315,17 @@ void game(boolean update)
         Ship player = players.get(j);
         if (! player.shield && player.collides(entity))
         {
+          addGameObject(new Explosion(player.vertices, player.position, player.colour));
+          player.velocity.x = player.velocity.y = 0;
           player.lives --;
           player.resetShield(5);
-          player.theta = 0;
           player.position = spawnPoints.get(j).get();
+          player.pointAtSun();          
           playSound(explosion);
         }
       }
       
-      // Check for deaths
+      // Check for powerups & BigStar
       for (int j = 0 ; j < children.size() ; j ++)
       {
         if (children.get(j) instanceof Powerup)
@@ -292,9 +333,12 @@ void game(boolean update)
           if (children.get(j).collides(entity))
           {
             children.get(j).alive = false;
+            addGameObject(new Explosion(children.get(j).vertices, children.get(j).position, children.get(j).colour));
+            playSound(explosion);
           }          
         }        
-      }  
+      } 
+      
     } 
   }  
   
@@ -306,7 +350,7 @@ void game(boolean update)
   {
     Ship player = players.get(i);
     stroke(player.colour);
-    printText("Player: " + (i + 1) + " Hyperdrive: " + player.hyper + " Lives: " + player.lives + " Ammo: " + player.ammo, font_size.small, 10, th * (i + 1));
+    printText("Player: " + (i + 1) + " Hyperdrive: " + player.hyper + " Lives: " + player.lives + " Ammo: " + player.ammo, font_size.small, (int)hudPositions.get(i).x, (int)hudPositions.get(i).y);
     if (player.lives == 0)
     {      
       children.remove(player);
@@ -326,19 +370,21 @@ void spawnPowerup()
 {
   if ((players.size() > 0) &&  (frameCount % ((int) spawnInterval * 60) == 0))
   {
-    int i = (int) random(0, 4);
+    int i = (int) random(0, 5);
     GameObject powerup = null;    
     switch (i)
     {
-      case 0:      
+      case 0:
+        powerup = new LivesPowerup();           
+        break;   
       case 1:      
-        powerup = new AmmoPowerup();
+        powerup = new HyperspacePowerup();
         break;
       case 2:      
         powerup = new ShieldPowerup();
         break;
-      case 3:
-        powerup = new LivesPowerup();
+      default:        
+        powerup = new AmmoPowerup();
         break;
     }    
     children.add(powerup);
@@ -346,10 +392,29 @@ void spawnPowerup()
 }
 
 
-
+boolean muteToggle = true;
 
 void draw()
 {
+  if (checkKey('M') )
+  {
+    if (muteToggle)
+    {
+      if (soundtrack.isMuted())
+      {
+        soundtrack.unmute();
+      }
+      else
+      {
+        soundtrack.mute();
+      }
+    }
+    muteToggle = false;
+  }
+  else
+  {
+    muteToggle = true;
+  }
   background(0);
   
   switch (gameState)

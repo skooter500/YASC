@@ -4,10 +4,29 @@ class LivesPowerup extends GameObject implements Powerup
   {
     w = 20;
     h = 20;
+    float radius = w / 2;
     position = randomOffscreenPoint(w);        
     theta = 0.0f;
-    colour = color(255, 0, 0);
+    colour = color(255);
     mass = 10.0f;
+    
+    vertices.add(new PVector(- radius, - radius));
+    vertices.add(new PVector(radius, -radius));
+    
+    vertices.add(new PVector(radius, - radius));
+    vertices.add(new PVector(radius, radius));
+    
+    vertices.add(new PVector(radius, radius));
+    vertices.add(new PVector(-radius, radius));
+    
+    vertices.add(new PVector(- radius, radius));
+    vertices.add(new PVector(-radius, -radius));
+    
+    vertices.add(new PVector(0, - radius));
+    vertices.add(new PVector(0, radius));
+    
+    vertices.add(new PVector(-radius, 0));
+    vertices.add(new PVector(radius, 0));    
   }  
   
   void applyTo(Ship ship)
@@ -21,7 +40,6 @@ class LivesPowerup extends GameObject implements Powerup
    integrate();
   }
   
-  
 
   void draw()
   {
@@ -30,10 +48,12 @@ class LivesPowerup extends GameObject implements Powerup
     pushMatrix();
     translate(position.x, position.y);
     rotate(theta);
-    float radius = w / 2.0f;
-    line(0, - radius, 0, radius);
-    line(-radius, 0, radius, 0);    
-    ellipse(0,0,w,w);
+    for (int i = 1 ; i < vertices.size() ; i += 2)
+    {
+        PVector from = vertices.get(i - 1);
+        PVector to = vertices.get(i);            
+        line(from.x, from.y, to.x, to.y);
+    }
     popMatrix();
   }  
 }
