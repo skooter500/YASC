@@ -73,7 +73,7 @@ class Ship extends GameObject
   void update()
   {                 
       elapsed += timeDelta;
-      float newtons = 400.0f;
+      float newtons = 800.0f;
       
       if ((device.getSlider(4).getValue() < -0.5f) || (device.getSlider(4).getValue() > 0.5f))
       {     
