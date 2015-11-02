@@ -1,5 +1,3 @@
-
-
 class Ship extends GameObject
 {  
   float fireRate = 5.0f;
