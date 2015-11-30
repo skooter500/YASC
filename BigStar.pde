@@ -1,4 +1,4 @@
-class BigStar extends GameObject
+ class BigStar extends GameObject
 {
   float points;
   float rot = 0;

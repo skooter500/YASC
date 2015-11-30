@@ -253,7 +253,7 @@ void draw()
 }
 
 boolean checkKey(int k)
-{
+{  
   return keys[k];
 }
 
