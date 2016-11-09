@@ -23,7 +23,7 @@ class Ship extends GameObject
   
   int spawnIndex;
 
-  ControllDevice device;
+  ControlDevice device;
   
   boolean jet;
 
@@ -59,7 +59,7 @@ class Ship extends GameObject
   float maxSpeed = 500;
   float maxForce;
   
-  Ship(ControllDevice device)
+  Ship(ControlDevice device)
   {
     this();
     this.device = device;

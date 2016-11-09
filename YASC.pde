@@ -1,12 +1,15 @@
+import net.java.games.input.*;
+import org.gamecontrolplus.*;
+import org.gamecontrolplus.gui.*;
+
 // Uses the following Processing libraries:
 // http://www.foobarquarium.de/blog/processing/MovingLetters/
 // http://creativecomputing.cc/p5libs/procontroll/
 
 import ddf.minim.*;
-import procontroll.*;
 import de.ilu.movingletters.*;
 
-float timeDelta = 1.0f / 60.0f;
+float timeDelta = 0;
 ArrayList<Ship> players = new ArrayList<Ship>();
 ArrayList<BigStar> stars = new ArrayList<BigStar>();
 ArrayList<PVector> spawnPoints = new ArrayList<PVector>();
@@ -14,7 +17,10 @@ ArrayList<PVector> hudPositions = new ArrayList<PVector>();
 
 boolean[] keys = new boolean[526];
 ArrayList<GameObject> children = new ArrayList<GameObject>();
-ArrayList<ControllDevice> devices = new ArrayList<ControllDevice>();
+ArrayList<ControlDevice> devices = new ArrayList<ControlDevice>();
+
+GameObject[] splashPowerups = {new ShieldPowerup(), new LivesPowerup(), new AmmoPowerup(), new HyperspacePowerup()};  
+String[] splashPowerupText = {"Shields", "Lives", "Lazers", "Hyperspaces" };
 
 int winnerIndex = 0;
 
@@ -31,7 +37,7 @@ float spawnInterval = 5.0f;
 
 int CENTRED = -1;
 boolean gameBegun;
-ControllIO controll;
+ControlIO controll;
 
 Minim minim;//audio context
 AudioPlayer soundtrack;
@@ -39,11 +45,7 @@ AudioPlayer explosion;
 AudioPlayer powerupSound;
 MovingLetters[] letters = new MovingLetters[3];
 
-boolean devMode = false;
- 
-boolean sketchFullScreen() {
-  return ! devMode;
-}
+boolean devMode = true;
 
 void addGameObject(GameObject o)
 {
@@ -53,15 +55,10 @@ void addGameObject(GameObject o)
 
 void setup()
 {
-  if (devMode)
-  {
-    size(800, 600);
-  }
-  else
-  {
-    size(displayWidth, displayHeight);
-  }
-  smooth();
+  //size(800, 600);
+  
+  fullScreen(P2D);
+  //smooth();
   noCursor();
   
   for (font_size size:font_size.values())
@@ -70,7 +67,7 @@ void setup()
   }
  
   minim = new Minim(this);  
-  controll = ControllIO.getInstance(this);
+  controll = ControlIO.getInstance(this);
   
   spawnPoints.add(new PVector(50, 50));
   spawnPoints.add(new PVector(width - 50, height- 50));
@@ -140,10 +137,26 @@ void splash()
   background(0);
   stroke(255);
   
-  printText("YASC", font_size.large, CENTRED, 100);  
-  printText("Yet Another Spacewar Clone", font_size.large, CENTRED, 200);  
-  printText("Programmed by Bryan Duggan", font_size.large, CENTRED, 300);
-  printText("Music by Paul Bloof", font_size.large, CENTRED, 400);
+  printText("YASC - Yet Another Spacewar Clone", font_size.large, CENTRED, 100);  
+  printText("A spacewar game for 4 players with XBOX controllers", font_size.medium, CENTRED, 200);  
+  printText("Programmed by Bryan Duggan, Music by Paul Bloof", font_size.medium, CENTRED, 300);
+  printText("Press Start to spawn", font_size.small, CENTRED, 400);
+  printText("Left stick to steer, Trigger to apply thrust", font_size.small, CENTRED, 450);
+  printText("A to shoot, X to Hyprerspace", font_size.small, CENTRED, 500);
+  
+  for(int i = 0 ; i < splashPowerups.length ; i ++)
+  {
+    int x = (width / 2) - 80;
+    int y = 600 + (i * 50);
+    splashPowerups[i].position.x = x;
+    splashPowerups[i].position.y = y; 
+    splashPowerups[i].update();
+    splashPowerups[i].draw();
+    stroke(255);  
+    printText(splashPowerupText[i], font_size.small, x + 50, y - 10);
+  }
+  
+  stroke(255);  
   if (frameCount / 60 % 2 == 0)
   {
     printText("Press SPACE to play", font_size.large, CENTRED, height - 100);  
@@ -205,11 +218,11 @@ void playSound(AudioPlayer sound, boolean loop)
   sound.play(); 
 }
 
-void checkForNewControllers()
+void checkForNewControlers()
 {
   // Add all the xbox controllers
   for(int i = 0; i < controll.getNumberOfDevices(); i++){
-    ControllDevice device = controll.getDevice(i);
+    ControlDevice device = controll.getDevice(i);
     if (device.getName().toUpperCase().indexOf("XBOX 360") != -1)
     {
       if (! devices.contains(device))
@@ -244,10 +257,10 @@ void enumerate()
 {
   for (int i = 0 ; i < devices.size() ; i ++)
   {
-    ControllDevice device = devices.get(i);
+    ControlDevice device = devices.get(i);
     for (int j = 0 ; j < device.getNumberOfButtons() ; j ++)
     {
-      ControllButton button = device.getButton(j);
+      ControlButton button = device.getButton(j);
       println(j + " " + button.pressed());
     }
   }
@@ -258,7 +271,7 @@ void game(boolean update)
   
   if (update)
   {
-    checkForNewControllers();
+    checkForNewControlers();
     applyGravity();
   }
   
@@ -398,9 +411,10 @@ void spawnPowerup()
 
 
 boolean muteToggle = true;
+long last = 0;
 
 void draw()
-{
+{  
   if (checkKey('M') )
   {
     if (muteToggle)
@@ -421,6 +435,7 @@ void draw()
     muteToggle = true;
   }
   background(0);
+  strokeWeight(2);
   
   switch (gameState)
   {
@@ -435,6 +450,9 @@ void draw()
       gameOver();
       break;  
   }
+  long now = millis();
+  timeDelta = (now - last) / 1000.0f;
+  last = now;
 }
 
 boolean checkKey(int k)
@@ -459,4 +477,3 @@ void keyReleased()
 {
   keys[keyCode] = false; 
 }
-
