@@ -20,7 +20,7 @@ ArrayList<GameObject> children = new ArrayList<GameObject>();
 ArrayList<ControlDevice> devices = new ArrayList<ControlDevice>();
 
 GameObject[] splashPowerups = {new ShieldPowerup(), new LivesPowerup(), new AmmoPowerup(), new HyperspacePowerup()};  
-String[] splashPowerupText = {"Shields", "Lives", "Lazers", "Hyperspaces" };
+String[] splashPowerupText = {"Shields", "Lives", "Ammo", "Hyperspaces" };
 
 int winnerIndex = 0;
 
@@ -44,8 +44,12 @@ AudioPlayer soundtrack;
 AudioPlayer explosion;
 AudioPlayer powerupSound;
 MovingLetters[] letters = new MovingLetters[3];
+PFont[] fonts = new PFont[3];
 
 boolean devMode = true;
+
+String hudTest = "Player: X Hyperdrive: XX Lives: XX  Ammo: XX";
+float hudWidth;
 
 void addGameObject(GameObject o)
 {
@@ -69,28 +73,52 @@ void setup()
   minim = new Minim(this);  
   controll = ControlIO.getInstance(this);
   
+  fonts[0] = createFont("Hyperspace Bold.otf", 24);
+  fonts[1] = createFont("Hyperspace Bold.otf", 32);
+  fonts[2] = createFont("Hyperspace Bold.otf", 48);
+  
   spawnPoints.add(new PVector(50, 50));
   spawnPoints.add(new PVector(width - 50, height- 50));
   spawnPoints.add(new PVector(50, height - 50));
   spawnPoints.add(new PVector(width - 50, 50));
   
-  hudPositions.add(new PVector(10, 10));
-  hudPositions.add(new PVector(width - 480, height - 30));
-  hudPositions.add(new PVector(10, height - 30));
-  hudPositions.add(new PVector(width - 480, 10));
+  hudWidth = calcHudWidth();
+  hudPositions.add(new PVector(10, 20));
+  hudPositions.add(new PVector(width - hudWidth, height - 5));
+  hudPositions.add(new PVector(10, height - 5));
+  hudPositions.add(new PVector(width - hudWidth, 40));
   
   explosion = minim.loadFile("Explosion4.wav");
   powerupSound = minim.loadFile("powerup.wav");
   soundtrack = minim.loadFile("soundtrack.mp3");  
+  
+  
+    
 }
 
-void printText(String text, font_size size, int x, int y)
+float calcHudWidth()
 {
+  textFont(fonts[font_size.small.index]);
+  return textWidth(hudTest);
+}
+
+void printText(String text, font_size size, float x, float y)
+{
+  textFont(fonts[size.index]);
+  /*
   if (x == CENTRED)
   {
     x = (width / 2) - (int) (size.size * (float) text.length() / 2.5f);
   }
-  letters[size.index].text(text, x, y);  
+  letters[size.index].text(text, x, y);
+  */
+  
+  if (x == CENTRED)
+  {
+    x = (width / 2) - (textWidth(text) / 2);
+  }  
+    
+  text(text, x, y);
 }
 
 void applyGravity()
@@ -140,7 +168,7 @@ void splash()
   printText("YASC - Yet Another Spacewar Clone", font_size.large, CENTRED, 100);  
   printText("A spacewar game for 4 players with XBOX controllers", font_size.medium, CENTRED, 200);  
   printText("Programmed by Bryan Duggan, Music by Paul Bloof", font_size.medium, CENTRED, 300);
-  printText("Press Start to spawn", font_size.small, CENTRED, 400);
+  printText("When the game begins, Press Start to spawn", font_size.small, CENTRED, 400);
   printText("Left stick to steer, Trigger to apply thrust", font_size.small, CENTRED, 450);
   printText("A to shoot, X to Hyprerspace", font_size.small, CENTRED, 500);
   
@@ -153,7 +181,7 @@ void splash()
     splashPowerups[i].update();
     splashPowerups[i].draw();
     stroke(255);  
-    printText(splashPowerupText[i], font_size.small, x + 50, y - 10);
+    printText(splashPowerupText[i], font_size.small, x + 50, y + 10);
   }
   
   stroke(255);  
@@ -373,7 +401,7 @@ void game(boolean update)
   for (int i = 0 ; i < players.size() ; i ++)
   {
     Ship player = players.get(i);
-    stroke(player.colour);
+    fill(player.colour);
     printText("Player: " + (i + 1) + " Hyperdrive: " + player.hyper + " Lives: " + player.lives + " Ammo: " + player.ammo, font_size.small, (int)hudPositions.get(player.spawnIndex).x, (int)hudPositions.get(player.spawnIndex).y);
     if (player.lives == 0)
     {      
