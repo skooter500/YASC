@@ -150,7 +150,7 @@ void reset()
   children.add(star);
   
   stars.add(star);      
-  for (int i = 0 ; i < 1000 ; i ++)
+  for (int i = 0 ; i < 100 ; i ++)
   {
      children.add(new SmallStar());
   }
@@ -168,7 +168,7 @@ void splash()
   printText("Programmed by Bryan Duggan, Music by Paul Bloof", font_size.medium, CENTRED, 300);
   printText("When the game begins, Press Start to spawn", font_size.small, CENTRED, 400);
   printText("Left stick to steer, Trigger to apply thrust", font_size.small, CENTRED, 450);
-  printText("A to shoot, X to Hyprerspace", font_size.small, CENTRED, 500);
+  printText("A to shoot, B to Hyprerspace", font_size.small, CENTRED, 500);
   
   for(int i = 0 ; i < splashPowerups.length ; i ++)
   {
@@ -185,9 +185,9 @@ void splash()
   stroke(255);  
   if (frameCount / 60 % 2 == 0)
   {
-    printText("Press SPACE to play", font_size.large, CENTRED, height - 100);  
+    printText("Press START to play", font_size.large, CENTRED, height - 100);  
   }
-  if (checkKey(' '))
+  if (checkForNewControlers())
   {
     reset();
     gameState = 1;
@@ -207,8 +207,8 @@ void gameOver()
     printText("Winner!", font_size.large, CENTRED, 400);
   }
   fill(255);  
-  printText("Press SPACE to play again", font_size.large, CENTRED, height - 100);  
-  if (checkKey(' '))
+  printText("Press START to play again", font_size.large, CENTRED, height - 100);  
+  if (checkForNewControlers())
   {
     reset();
     gameState = 1;
@@ -243,8 +243,9 @@ void playSound(AudioPlayer sound, boolean loop)
   sound.play(); 
 }
 
-void checkForNewControlers()
+boolean checkForNewControlers()
 {
+  boolean start = false;
   // Add all the xbox controllers
   int controllerIndex = 0;
   for(int i = 0; i < controll.getNumberOfDevices(); i++){
@@ -257,6 +258,7 @@ void checkForNewControlers()
         if (device.getButton(7).pressed())
         {
           println("New player joined");
+          start = true;
           devices.put(device, device);        
           int j = players.size();
           if (j == 1)
@@ -279,6 +281,7 @@ void checkForNewControlers()
       }
     }    
   }
+  return start;
 }
 
 void enumerate()
