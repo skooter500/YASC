@@ -10,4 +10,3 @@ enum font_size
      this.index = index;
    }
 }
-

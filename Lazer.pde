@@ -35,7 +35,7 @@ class Lazer extends GameObject
     translate(position.x, position.y);
     rotate(theta);
     scale(scaleF);
-    float alpha = (1.0f - aliveFor / toLive) * 255.0f;
+    float alpha = (1.0f - aliveFor / toLive) * 2000.0f;
     stroke(red(colour), green(colour), blue(colour), (int)alpha); 
     line(0, - h / 2.0f, 0, h / 2.0f);
       

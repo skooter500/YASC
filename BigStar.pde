@@ -11,7 +11,7 @@ class BigStar extends GameObject
     points = 20;
     rot = 0.0f;
     rotSpeed = 0.01f;
-    colour = color(255);
+    colour = color(128, 128, 0);
   }
   
   void update()
