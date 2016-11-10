@@ -59,9 +59,9 @@ void addGameObject(GameObject o)
 
 void setup()
 {
-  //size(800, 600);
+  size(800, 600);
   
-  fullScreen(P2D);
+  //fullScreen(P2D);
   //smooth();
   noCursor();
   
