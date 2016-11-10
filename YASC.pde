@@ -17,7 +17,7 @@ ArrayList<PVector> hudPositions = new ArrayList<PVector>();
 
 boolean[] keys = new boolean[526];
 ArrayList<GameObject> children = new ArrayList<GameObject>();
-ArrayList<ControlDevice> devices = new ArrayList<ControlDevice>();
+HashMap<ControlDevice, ControlDevice> devices = new HashMap<ControlDevice, ControlDevice>();
 
 GameObject[] splashPowerups = {new ShieldPowerup(), new LivesPowerup(), new AmmoPowerup(), new HyperspacePowerup()};  
 String[] splashPowerupText = {"Shields", "Lives", "Ammo", "Hyperspaces" };
@@ -59,9 +59,9 @@ void addGameObject(GameObject o)
 
 void setup()
 {
-  size(800, 600);
+  //size(800, 600, P3D);
   
-  //fullScreen(P2D);
+  fullScreen(P3D);
   //smooth();
   noCursor();
   
@@ -91,9 +91,7 @@ void setup()
   explosion = minim.loadFile("Explosion4.wav");
   powerupSound = minim.loadFile("powerup.wav");
   soundtrack = minim.loadFile("soundtrack.mp3");  
-  
-  
-    
+     
 }
 
 float calcHudWidth()
@@ -152,7 +150,7 @@ void reset()
   children.add(star);
   
   stars.add(star);      
-  for (int i = 0 ; i < 100 ; i ++)
+  for (int i = 0 ; i < 1000 ; i ++)
   {
      children.add(new SmallStar());
   }
@@ -199,17 +197,16 @@ void splash()
 void gameOver()
 {
   fill(255);
-  stroke(255);
-  
+  stroke(255);  
   printText("YASC", font_size.large, CENTRED, 100);  
   printText("Yet Another Spacewar Clone", font_size.large, CENTRED, 200);  
   printText("Game Over", font_size.large, CENTRED, 300);
-  stroke(colours[winnerIndex]);
+  fill(colours[winnerIndex]);
   if (frameCount / 60 % 2 == 0)
   {
     printText("Winner!", font_size.large, CENTRED, 400);
   }
-  stroke(255);  
+  fill(255);  
   printText("Press SPACE to play again", font_size.large, CENTRED, height - 100);  
   if (checkKey(' '))
   {
@@ -249,16 +246,18 @@ void playSound(AudioPlayer sound, boolean loop)
 void checkForNewControlers()
 {
   // Add all the xbox controllers
+  int controllerIndex = 0;
   for(int i = 0; i < controll.getNumberOfDevices(); i++){
     ControlDevice device = controll.getDevice(i);
     if (device.getName().toUpperCase().indexOf("XBOX 360") != -1)
     {
-      if (! devices.contains(device))
+      controllerIndex ++;
+      if (!devices.containsKey(device))
       {        
         if (device.getButton(7).pressed())
         {
           println("New player joined");
-          devices.add(device);        
+          devices.put(device, device);        
           int j = players.size();
           if (j == 1)
           {
@@ -275,6 +274,7 @@ void checkForNewControlers()
           playSound(player.hyperDriveSound);
           children.add(player);
           players.add(player);
+          controllerIndex ++;
         }        
       }
     }    
@@ -481,6 +481,20 @@ void draw()
   long now = millis();
   timeDelta = (now - last) / 1000.0f;
   last = now;
+}
+
+void controllerTest()
+{
+  for(int i = 0; i < controll.getNumberOfDevices(); i++) 
+  {
+    ControlDevice device = controll.getDevice(i);
+    if (device.getName().toUpperCase().indexOf("XBOX 360") != -1)
+    {
+      print(i + " " + device.getName() + " ");
+      println (device.getButton(7).pressed());
+    }
+  }
+  println("===");
 }
 
 boolean checkKey(int k)
