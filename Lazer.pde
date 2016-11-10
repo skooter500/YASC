@@ -9,53 +9,34 @@ class Lazer extends GameObject
     h = 5.0f;
     mass = 0.2f;
     speed = 300.0f;
-    toLive = 5.0f;
+    toLive = 3.0f;
   }
   
   void update()
   {
-    PVector acceleration = PVector.div(force, mass);
-    velocity.add(PVector.mult(acceleration, timeDelta));          
-    position.add(PVector.mult(velocity, timeDelta));
-    
-    theta = velocity.heading() + HALF_PI;
-    
-    if (position.x > width)
-    {
-      position.x = 0;
-    }
-    if (position.x < 0)
-    {
-      position.x = width;
-    }
-    
-    if (position.y > height)
-    {
-      position.y = 0;
-    }
-    if (position.y < 0)
-    {
-      position.y = height;
-    }
-    
+   
     aliveFor += timeDelta;    
     if (aliveFor > toLive)
     {
       alive = false;
     }
+    integrate();
+    wrap();    
+    
+    theta = velocity.heading() + HALF_PI;
     force.setMag(0);
     look.x = sin(theta);
-    look.y = -cos(theta);   
+    look.y = -cos(theta);
   }
   
   void draw()
   {
-    stroke(colour);
     pushMatrix();
     translate(position.x, position.y);
     rotate(theta);
     scale(scaleF);
-    
+    float alpha = (1.0f - aliveFor / toLive) * 255.0f;
+    stroke(red(colour), green(colour), blue(colour), (int)alpha); 
     line(0, - h / 2.0f, 0, h / 2.0f);
       
     popMatrix();        
