@@ -187,7 +187,7 @@ void splash()
   {
     printText("Press START to play", font_size.large, CENTRED, height - 100);  
   }
-  if (checkForNewControlers())
+  if (checkForStart())
   {
     reset();
     gameState = 1;
@@ -208,12 +208,14 @@ void gameOver()
   }
   fill(255);  
   printText("Press START to play again", font_size.large, CENTRED, height - 100);  
-  if (checkForNewControlers())
+  if (checkForStart())
   {
     reset();
     gameState = 1;
   }
 }
+
+
 
 void playSound(AudioPlayer sound)
 {
@@ -227,11 +229,8 @@ void playSound(AudioPlayer sound, boolean loop)
     return;
   }
   sound.setGain(14);
-  if (!loop)
-  {
-    sound.rewind();
-  }
-  else
+  sound.rewind();
+  if (loop)
   {
     sound.loop();
     if (sound.isPlaying())
@@ -241,6 +240,22 @@ void playSound(AudioPlayer sound, boolean loop)
   }    
   
   sound.play(); 
+}
+
+boolean checkForStart()
+{
+  // Add all the xbox controllers
+  for(int i = 0; i < controll.getNumberOfDevices(); i++){
+    ControlDevice device = controll.getDevice(i);
+    if (device.getName().toUpperCase().indexOf("XBOX 360") != -1)
+    {
+      if (device.getButton(7).pressed())
+      {
+        return true;
+      }        
+    }    
+  }
+  return false;
 }
 
 boolean checkForNewControlers()
