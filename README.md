@@ -9,8 +9,8 @@ YASC is written in Processing.
 
 [Download the game on itch!](https://skooter500.itch.io/yasc)
 
-![](images/1.png)
+![](screenshots/1.png)
 
-![](images/2.png)
+![](screenshots/2.png)
 
-![](images/3.png)
+![](screenshots/3.png)
