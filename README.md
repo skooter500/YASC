@@ -7,6 +7,8 @@ YASC requires XBOX 360 controllers to play.
 
 YASC is written in Processing.
 
+[Download the game on itch!](https://skooter500.itch.io/yasc)
+
 ![](images/1.png)
 
 ![](images/2.png)
