@@ -2,10 +2,6 @@ import net.java.games.input.*;
 import org.gamecontrolplus.*;
 import org.gamecontrolplus.gui.*;
 
-// Uses the following Processing libraries:
-// http://www.foobarquarium.de/blog/processing/MovingLetters/
-// http://creativecomputing.cc/p5libs/procontroll/
-
 import ddf.minim.*;
 import de.ilu.movingletters.*;
 
@@ -20,7 +16,7 @@ ArrayList<GameObject> children = new ArrayList<GameObject>();
 HashMap<ControlDevice, ControlDevice> devices = new HashMap<ControlDevice, ControlDevice>();
 
 GameObject[] splashPowerups = {new ShieldPowerup(), new LivesPowerup(), new AmmoPowerup(), new HyperspacePowerup()};  
-String[] splashPowerupText = {"Shields", "Lives", "Ammo", "Hyperspaces" };
+String[] splashPowerupText = {"Shields", "Lives", "Ammo", "Hyperspace" };
 
 int winnerIndex = 0;
 
@@ -164,9 +160,9 @@ void splash()
   stroke(255);
   
   printText("YASC - Yet Another Spacewar Clone", font_size.large, CENTRED, 100);  
-  printText("A spacewar game for 4 players with XBOX controllers", font_size.medium, CENTRED, 200);  
+  printText("A spacewar game for 4 players with XBOX 360 controllers", font_size.medium, CENTRED, 200);  
   printText("Programmed by Bryan Duggan, Music by Paul Bloof", font_size.medium, CENTRED, 300);
-  printText("When the game begins, Press Start to spawn", font_size.small, CENTRED, 400);
+  printText("Press Start to spawn", font_size.small, CENTRED, 400);
   printText("Left stick to steer, Trigger to apply thrust", font_size.small, CENTRED, 450);
   printText("A to shoot, B to Hyprerspace", font_size.small, CENTRED, 500);
   
