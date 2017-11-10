@@ -3,7 +3,6 @@ import org.gamecontrolplus.*;
 import org.gamecontrolplus.gui.*;
 
 import ddf.minim.*;
-import de.ilu.movingletters.*;
 
 float timeDelta = 0;
 ArrayList<Ship> players = new ArrayList<Ship>();
