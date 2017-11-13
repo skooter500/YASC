@@ -38,7 +38,6 @@ Minim minim;//audio context
 AudioPlayer soundtrack;
 AudioPlayer explosion;
 AudioPlayer powerupSound;
-MovingLetters[] letters = new MovingLetters[3];
 PFont[] fonts = new PFont[3];
 
 boolean devMode = true;
@@ -60,10 +59,6 @@ void setup()
   //smooth();
   noCursor();
   
-  for (font_size size:font_size.values())
-  {
-    letters[size.index] = new MovingLetters(this, size.size, 1, 0);
-  }
  
   minim = new Minim(this);  
   controll = ControlIO.getInstance(this);
